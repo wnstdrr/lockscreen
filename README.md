@@ -11,16 +11,33 @@ Create an effected lockscreen for the I3 desktop.
 
 For more information on getting started with i3 see their documentation [here](https://i3wm.org/docs/userguide.html).
 
-# Installation
-
-Build release from source and install from project directory.
+Rust toolchain via [rustup](https://rustup.rs). If no default toolchain is set:
 
 ```shell
-cargo install --path .
+rustup default stable
 ```
 
-Add lockscreen to your i3 config. I prefer this binding for my lockscreen, but you can use whatever is comfortable.
-My mod key is `Mod1` or left alt.
+# Installation
+
+Clone the repo and run the installation script. Requires `cargo` and `i3lock` on `PATH`.
+
+```shell
+git clone https://github.com/wnstdrr/lockscreen
+cd lockscreen
+sudo ./install.sh
+```
+
+This builds a release binary and installs it to `/usr/local/bin/lockscreen` along with the man page at `/usr/local/share/man/man1/lockscreen.1`.
+
+To install to a custom location without `sudo`:
+
+```shell
+BIN_DIR=~/.local/bin MAN_DIR=~/.local/share/man/man1 ./install.sh
+```
+
+## i3 Config
+
+Add a keybinding to your i3 config. My mod key is `Mod1` (left alt).
 
 ```shell
 bindsym $mod+Ctrl+Shift+l exec lockscreen -s 1.5 -r 2.0 -e gaussian-asymmetric
