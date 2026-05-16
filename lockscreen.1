@@ -1,0 +1,126 @@
+.TH LOCKSCREEN 1 "2026-05-16" "lockscreen 0.1.0" "User Commands"
+.SH NAME
+lockscreen \- apply a visual effect to the desktop and lock the screen with i3lock
+.SH SYNOPSIS
+.B lockscreen
+[\fB\-s\fR \fISIGMA\fR]
+[\fB\-r\fR \fIRADIUS\fR]
+[\fB\-e\fR \fIEFFECT\fR]
+[\fB\-\-no\-lock\fR]
+.SH DESCRIPTION
+.B lockscreen
+captures all connected displays, applies a blur or pixelate effect to the
+screenshot, composites multi-monitor setups into a single image, and passes
+the result to
+.BR i3lock (1).
+The temporary image is removed after i3lock exits.
+.SH OPTIONS
+.TP
+.BR \-s ", " \-\-sigma " " \fISIGMA\fR
+Standard deviation for Gaussian blur, or block size (integer) for the
+pixelate effect.
+A sigma of 1 with pixelate produces no visible change (one-pixel blocks).
+Default: \fB1.5\fR.
+.TP
+.BR \-r ", " \-\-radius " " \fIRADIUS\fR
+Spread radius for the asymmetric Gaussian blur.
+Has no effect when using the
+.B gaussian
+or
+.B pixelate
+effects.
+Default: \fB0.1\fR.
+.TP
+.BR \-e ", " \-\-effect " " \fIEFFECT\fR
+Visual effect to apply before locking.
+.RS
+.TP
+.B gaussian
+Symmetric Gaussian blur.
+.I sigma
+controls blur strength.
+.TP
+.B gaussian\-asymmetric
+Asymmetric Gaussian blur with a stretched appearance.
+Both
+.I sigma
+and
+.I radius
+are used.
+.TP
+.B pixelate
+Pixelate the screenshot.
+.I sigma
+is cast to an integer and used as the block size in pixels.
+.RE
+Default: \fBgaussian\fR.
+.TP
+.B \-\-no\-lock
+Capture and apply the effect but do not invoke i3lock.
+Prints the path of the saved composite image to stdout instead.
+Useful for previewing effect output or scripting.
+.SH EXIT STATUS
+Exits 0 on success.
+Panics (non-zero exit) if screen capture fails, the image cannot be saved to
+.IR /tmp ,
+or i3lock cannot be executed.
+.SH FILES
+.TP
+.I /tmp/lockscreen.png
+Temporary composite image.
+Deleted automatically after i3lock exits unless
+.B \-\-no\-lock
+is specified.
+.SH EXAMPLES
+Lock with default symmetric Gaussian blur:
+.PP
+.RS
+.EX
+lockscreen
+.EE
+.RE
+.PP
+Lock with a stronger asymmetric blur:
+.PP
+.RS
+.EX
+lockscreen \-s 1.5 \-r 2.0 \-e gaussian\-asymmetric
+.EE
+.RE
+.PP
+Lock with a coarse pixelate effect (20\-pixel blocks):
+.PP
+.RS
+.EX
+lockscreen \-s 20 \-e pixelate
+.EE
+.RE
+.PP
+Preview the effect without locking:
+.PP
+.RS
+.EX
+lockscreen \-\-no\-lock \-e gaussian\-asymmetric
+.EE
+.RE
+.PP
+Typical i3 config binding (mod key = Mod1):
+.PP
+.RS
+.EX
+bindsym $mod+Ctrl+Shift+l exec lockscreen \-s 1.5 \-r 2.0 \-e gaussian\-asymmetric
+.EE
+.RE
+.SH DEPENDENCIES
+.BR i3lock (1)
+must be installed and available on
+.BR PATH .
+Requires an X11 session managed by
+.BR i3 (1)
+or
+.B i3\-gaps.
+.SH SEE ALSO
+.BR i3lock (1),
+.BR i3 (1)
+.SH AUTHORS
+Xander Tedder
