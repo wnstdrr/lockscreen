@@ -1,0 +1,10 @@
+[package]
+name = "lockscreen"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.6.1", features = ["derive"] }
+fastblur = "0.1.1"
+image = "0.25.10"
+screenshots = "0.8.10"
