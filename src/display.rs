@@ -2,7 +2,7 @@ use crate::effect::{EffectType, apply_effect};
 use std::path::PathBuf;
 use std::process::Command;
 use xcap::Monitor;
-use xcap::image::{RgbaImage, imageops};
+use xcap::image::{ImageError, RgbaImage, imageops};
 
 pub struct ScreenshotDisplay {
     pub(crate) x: i32,
@@ -13,16 +13,23 @@ pub struct ScreenshotDisplay {
 /// Get the lock screen image and apply an effect
 /// `sigma` and `radius` are used in the Gaussian blur to affect the strength.
 pub fn get_screenshots(effect: EffectType, sigma: f32, radius: f32) -> Vec<ScreenshotDisplay> {
-    let screens: Vec<Monitor> = Monitor::all().unwrap();
-    let mut displays: Vec<ScreenshotDisplay> = Vec::new();
+    let screens = Monitor::all().unwrap_or_else(|_| Vec::new());
+    let mut displays = Vec::new();
 
     for screen in screens {
-        let image = screen.capture_image().unwrap();
-        displays.push(ScreenshotDisplay {
-            x: screen.x().unwrap_or(0),
-            y: screen.y().unwrap_or(0),
-            image: apply_effect(&image, sigma, radius, effect),
-        });
+        match screen.capture_image() {
+            Ok(image) => displays.push(ScreenshotDisplay {
+                x: screen.x().unwrap_or(0),
+                y: screen.y().unwrap_or(0),
+                image: apply_effect(&image, sigma, radius, effect),
+            }),
+
+            Err(_) => {
+                // We could not get this display for one reason or another.
+                // Skip adding it to the vector of displays.
+                continue;
+            }
+        }
     }
 
     displays
@@ -68,17 +75,16 @@ pub fn compose_displays(screenshots: &[ScreenshotDisplay]) -> RgbaImage {
 }
 
 /// Saves the composite image to a temporary path
-pub fn save_composite(image: &RgbaImage) -> PathBuf {
+pub fn save_composite(image: &RgbaImage) -> Result<PathBuf, ImageError> {
     let path = PathBuf::from("/tmp/lockscreen.png");
-    image.save(&path).unwrap();
-    path
+    image.save(&path)?;
+
+    Ok(path)
 }
 
 /// Executes `i3lock` with the corresponding image to show for each of the lock screens
-pub fn lock_screen(image_path: &PathBuf) {
-    Command::new("i3lock")
-        .arg("-i")
-        .arg(image_path)
-        .status()
-        .expect("failed to execute i3lock");
+pub fn lock_screen(image_path: &PathBuf) -> Result<(), std::io::Error> {
+    Command::new("i3lock").arg("-i").arg(image_path).output()?;
+
+    Ok(())
 }
