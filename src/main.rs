@@ -4,8 +4,8 @@ mod effect;
 use crate::effect::EffectType;
 use clap::Parser;
 
-#[derive(Parser, Debug)]
-#[command(version, about = "Command line screensaver utility", long_about = None)]
+#[derive(Parser)]
+#[command(version, about = "Screensaver utility for i3lock(1)", long_about = None)]
 struct Args {
     #[clap(short, long, default_value = "1.5")]
     sigma: f32,

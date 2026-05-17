@@ -2,7 +2,7 @@ use fastblur::gaussian_blur;
 use fastblur::gaussian_blur_asymmetric;
 use xcap::image::{Rgba, RgbaImage};
 
-#[derive(Copy, Clone, Debug, clap::ValueEnum)]
+#[derive(Copy, Clone, clap::ValueEnum)]
 pub(crate) enum EffectType {
     Gaussian,
     GaussianAsymmetric,
