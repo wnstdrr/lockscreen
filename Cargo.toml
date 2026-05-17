@@ -14,4 +14,3 @@ panic="abort"
 clap = { version = "4.6.1", features = ["derive"] }
 xcap = {  version = "0.9.4", features = ["image"] }
 fastblur = "0.1.1"
-image = "0.25.10"

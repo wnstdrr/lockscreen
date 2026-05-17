@@ -59,7 +59,6 @@ bindsym $mod+Ctrl+Shift+l exec lockscreen -s 1.5 -r 2.0 -e gaussian-asymmetric
 
 * [clap](https://crates.io/crates/clap/4.6.1) for command line argument parsing
 * [fastblur](https://crates.io/crates/fastblur/0.1.1) for fast Gaussian blur effects
-* [image](https://crates.io/crates/image/0.25.10) for image related manipulation 
 * [xcap](https://crates.io/crates/xcap/0.9.4) for desktop screen capturing
 
 # Blur Types
