@@ -1,10 +1,8 @@
-use crate::effect::EffectType;
-use crate::effect::apply_effect;
-use screenshots::Screen;
-use screenshots::image::RgbaImage;
-use screenshots::image::imageops;
+use crate::effect::{EffectType, apply_effect};
 use std::path::PathBuf;
 use std::process::Command;
+use xcap::Monitor;
+use xcap::image::{RgbaImage, imageops};
 
 pub struct ScreenshotDisplay {
     pub(crate) x: i32,
@@ -15,15 +13,14 @@ pub struct ScreenshotDisplay {
 /// Get the lock screen image and apply an effect
 /// `sigma` and `radius` are used in the Gaussian blur to affect the strength.
 pub fn get_screenshots(effect: EffectType, sigma: f32, radius: f32) -> Vec<ScreenshotDisplay> {
-    let screens: Vec<Screen> = Screen::all().unwrap();
+    let screens: Vec<Monitor> = Monitor::all().unwrap();
     let mut displays: Vec<ScreenshotDisplay> = Vec::new();
 
     for screen in screens {
-        let image = screen.capture().unwrap();
-
+        let image = screen.capture_image().unwrap();
         displays.push(ScreenshotDisplay {
-            x: screen.display_info.x,
-            y: screen.display_info.y,
+            x: screen.x().unwrap_or(0),
+            y: screen.y().unwrap_or(0),
             image: apply_effect(&image, sigma, radius, effect),
         });
     }
