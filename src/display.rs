@@ -1,19 +1,18 @@
 use crate::effect::{EffectType, apply_effect};
 use std::path::PathBuf;
-use std::process::Command;
 use xcap::Monitor;
 use xcap::image::{ImageError, RgbaImage, imageops};
 
 pub struct ScreenshotDisplay {
-    pub(crate) x: i32,
-    pub(crate) y: i32,
-    pub(crate) image: RgbaImage,
+    pub x: i32,
+    pub y: i32,
+    pub image: RgbaImage,
 }
 
 /// Get the lock screen image and apply an effect
 /// `sigma` and `radius` are used in the Gaussian blur to affect the strength.
 pub fn get_screenshots(effect: EffectType, sigma: f32, radius: f32) -> Vec<ScreenshotDisplay> {
-    let screens = Monitor::all().unwrap_or_else(|_| Vec::new());
+    let screens = Monitor::all().unwrap_or_default();
     let mut displays = Vec::new();
 
     for screen in screens {
@@ -43,7 +42,6 @@ pub fn compose_displays(screenshots: &[ScreenshotDisplay]) -> RgbaImage {
 
     // Get min x,y values from the screenshot display
     let min_x = screenshots.iter().map(|s| s.x).min().unwrap_or(0);
-
     let min_y = screenshots.iter().map(|s| s.y).min().unwrap_or(0);
 
     // Get max x,y values from the screenshot display
@@ -74,17 +72,10 @@ pub fn compose_displays(screenshots: &[ScreenshotDisplay]) -> RgbaImage {
     composite
 }
 
-/// Saves the composite image to a temporary path
+/// Saves the composite image to tmpfs
 pub fn save_composite(image: &RgbaImage) -> Result<PathBuf, ImageError> {
-    let path = PathBuf::from("/tmp/lockscreen.png");
+    let path = PathBuf::from("/dev/shm/lockscreen.png");
     image.save(&path)?;
 
     Ok(path)
-}
-
-/// Executes `i3lock` with the corresponding image to show for each of the lock screens
-pub fn lock_screen(image_path: &PathBuf) -> Result<(), std::io::Error> {
-    Command::new("i3lock").arg("-i").arg(image_path).output()?;
-
-    Ok(())
 }

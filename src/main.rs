@@ -1,8 +1,7 @@
-mod display;
-mod effect;
-
-use crate::effect::EffectType;
 use clap::Parser;
+use lockscreen::display;
+use lockscreen::effect::EffectType;
+use lockscreen::lock::{I3Lock, LockerBackend, ScreenLocker};
 use std::process::exit;
 
 #[derive(Parser)]
@@ -16,6 +15,9 @@ struct Args {
 
     #[clap(short, long, default_value = "gaussian")]
     effect: EffectType,
+
+    #[clap(short, long, default_value = "i3")]
+    backend: LockerBackend,
 
     #[clap(long, default_value = "false")]
     no_lock: bool,
@@ -39,13 +41,11 @@ fn main() {
         exit(0);
     }
 
-    if let Err(e) = display::lock_screen(&path) {
-        eprintln!("Failed to open i3lock: {}", e);
-        exit(1);
-    }
+    let locker: Box<dyn ScreenLocker> = match args.backend {
+        LockerBackend::I3 => Box::new(I3Lock),
+    };
 
-    if let Err(e) = std::fs::remove_file(&path) {
-        eprintln!("Failed to remove screen: {}", e);
-        exit(1);
+    if let Err(e) = locker.lock(&path) {
+        eprintln!("Failed to lock screen: {}", e.to_string());
     }
 }

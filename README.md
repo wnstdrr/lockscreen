@@ -72,3 +72,8 @@ Currently, only supports three blur types.
 * Pixelate
 
 Gaussian and Gaussian Asymmetric effects provided by the [fastblur](https://crates.io/crates/fastblur) library.
+
+# Todo
+
+* [X] Support i3lock
+* [ ] Support GDM
