@@ -11,7 +11,12 @@ pub struct ScreenshotDisplay {
 
 /// Get the lock screen image and apply an effect
 /// `sigma` and `radius` are used in the Gaussian blur to affect the strength.
-pub fn get_screenshots(effect: EffectType, sigma: f32, radius: f32) -> Vec<ScreenshotDisplay> {
+pub fn get_screenshots(
+    effect: EffectType,
+    sigma: f32,
+    radius: f32,
+    fast: bool,
+) -> Vec<ScreenshotDisplay> {
     let screens = Monitor::all().unwrap_or_default();
     let mut displays = Vec::new();
 
@@ -20,7 +25,7 @@ pub fn get_screenshots(effect: EffectType, sigma: f32, radius: f32) -> Vec<Scree
             Ok(image) => displays.push(ScreenshotDisplay {
                 x: screen.x().unwrap_or(0),
                 y: screen.y().unwrap_or(0),
-                image: apply_effect(&image, sigma, radius, effect),
+                image: apply_effect(&image, sigma, radius, effect, fast),
             }),
 
             Err(_) => {

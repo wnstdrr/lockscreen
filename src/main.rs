@@ -19,6 +19,9 @@ struct Args {
     #[clap(short, long, default_value = "i3")]
     backend: LockerBackend,
 
+    #[clap(short, long, default_value = "false")]
+    fast: bool,
+
     #[clap(long, default_value = "false")]
     no_lock: bool,
 }
@@ -26,7 +29,7 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    let displays = display::get_screenshots(args.effect, args.sigma, args.radius);
+    let displays = display::get_screenshots(args.effect, args.sigma, args.radius, args.fast);
     let composite = display::compose_displays(&displays);
     let path = match display::save_composite(&composite) {
         Ok(p) => p,

@@ -12,7 +12,7 @@ fn new_display(x: i32, y: i32, w: u32, h: u32) -> ScreenshotDisplay {
 
 #[test]
 fn get_screenshots_returns_valid_displays() {
-    let displays = get_screenshots(EffectType::Gaussian, 2.0, 1.0);
+    let displays = get_screenshots(EffectType::Gaussian, 2.0, 1.0, false);
 
     for display in &displays {
         assert!(display.image.width() > 0);
@@ -27,7 +27,22 @@ fn get_screenshots_returns_valid_displays() {
 
 #[test]
 fn get_screenshots_gaussian_asymmetric_returns_valid_displays() {
-    let displays = get_screenshots(EffectType::GaussianAsymmetric, 2.0, 1.0);
+    let displays = get_screenshots(EffectType::GaussianAsymmetric, 2.0, 1.0, false);
+
+    for display in &displays {
+        assert!(display.image.width() > 0);
+        assert!(display.image.height() > 0);
+
+        assert_eq!(
+            display.image.dimensions(),
+            (display.image.width(), display.image.height())
+        );
+    }
+}
+
+#[test]
+fn get_screenshots_gaussian_box_blur_returns_valid_displays() {
+    let displays = get_screenshots(EffectType::GaussianBoxBlur, 2.0, 1.0, false);
 
     for display in &displays {
         assert!(display.image.width() > 0);
@@ -42,7 +57,7 @@ fn get_screenshots_gaussian_asymmetric_returns_valid_displays() {
 
 #[test]
 fn get_screenshots_pixelate_returns_valid_displays() {
-    let displays = get_screenshots(EffectType::Pixelate, 2.0, 1.0);
+    let displays = get_screenshots(EffectType::Pixelate, 2.0, 1.0, false);
 
     for display in &displays {
         assert_eq!(
